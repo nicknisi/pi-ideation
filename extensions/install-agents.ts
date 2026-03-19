@@ -1,60 +1,26 @@
 /**
- * Agent Installer Extension
+ * Peer dependency checker for pi-ideation.
  *
- * Copies bundled agent definitions (scout, reviewer) to the user's
- * ~/.pi/agent/agents/ directory where pi-subagents discovers them.
- * Only installs if the files don't already exist or are older than
- * the bundled versions.
+ * Warns on session start if recommended packages are missing.
  *
- * Checks for pi-subagents at startup and warns if not installed.
+ * Note: bundled agents (scout, reviewer) live in this package's agents/
+ * directory but are NOT auto-installed into ~/.pi/agent/agents/. To use
+ * them with pi-subagents, manually symlink or copy them:
+ *
+ *   ln -s "$(npm root -g)/@nicknisi/pi-ideation/agents/scout.md" ~/.pi/agent/agents/
+ *   ln -s "$(npm root -g)/@nicknisi/pi-ideation/agents/reviewer.md" ~/.pi/agent/agents/
+ *
+ * The execute-spec skill degrades gracefully without them — it falls back
+ * to inline exploration (no scout) and validation-only mode (no reviewer).
  */
 
 import type { ExtensionAPI } from "@mariozechner/pi-coding-agent";
-import { existsSync, mkdirSync, readFileSync, writeFileSync, statSync } from "node:fs";
-import { join, dirname } from "node:path";
-import { fileURLToPath } from "node:url";
-
-const AGENTS_DIR = join(process.env.HOME || "", ".pi", "agent", "agents");
-const PACKAGE_AGENTS_DIR = join(dirname(dirname(fileURLToPath(import.meta.url))), "agents");
-
-const BUNDLED_AGENTS = ["scout.md", "reviewer.md"];
-
-function installAgents() {
-	if (!existsSync(AGENTS_DIR)) {
-		mkdirSync(AGENTS_DIR, { recursive: true });
-	}
-
-	for (const agent of BUNDLED_AGENTS) {
-		const src = join(PACKAGE_AGENTS_DIR, agent);
-		const dest = join(AGENTS_DIR, agent);
-
-		if (!existsSync(src)) continue;
-
-		// Skip if destination exists and is newer than source
-		if (existsSync(dest)) {
-			const srcStat = statSync(src);
-			const destStat = statSync(dest);
-			if (destStat.mtimeMs >= srcStat.mtimeMs) continue;
-		}
-
-		const content = readFileSync(src, "utf-8");
-		writeFileSync(dest, content);
-	}
-}
 
 function hasTool(pi: ExtensionAPI, name: string): boolean {
 	return pi.getAllTools().some((t) => t.name === name);
 }
 
 export default function (pi: ExtensionAPI) {
-	// Install agents on load
-	try {
-		installAgents();
-	} catch {
-		// Silently fail — agents are optional if pi-subagents isn't installed
-	}
-
-	// Check for required peer packages on session start
 	pi.on("session_start", async (_event, ctx) => {
 		const missing: string[] = [];
 
