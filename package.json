@@ -1,6 +1,6 @@
 {
   "name": "@nicknisi/pi-ideation",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Transform brain dumps into structured implementation specs with confidence-gated workflows, codebase exploration, and automated review cycles.",
   "keywords": ["pi-package"],
   "author": "Nick Nisi",
