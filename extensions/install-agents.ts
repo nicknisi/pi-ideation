@@ -42,8 +42,8 @@ function installAgents() {
 	}
 }
 
-function hasSubagentTool(pi: ExtensionAPI): boolean {
-	return pi.getAllTools().some((t) => t.name === "subagent");
+function hasTool(pi: ExtensionAPI, name: string): boolean {
+	return pi.getAllTools().some((t) => t.name === name);
 }
 
 export default function (pi: ExtensionAPI) {
@@ -54,11 +54,20 @@ export default function (pi: ExtensionAPI) {
 		// Silently fail — agents are optional if pi-subagents isn't installed
 	}
 
-	// Check for pi-subagents on session start
+	// Check for required peer packages on session start
 	pi.on("session_start", async (_event, ctx) => {
-		if (!hasSubagentTool(pi)) {
+		const missing: string[] = [];
+
+		if (!hasTool(pi, "subagent")) {
+			missing.push("pi-subagents (pi install npm:pi-subagents)");
+		}
+		if (!hasTool(pi, "ask_user_question")) {
+			missing.push("pi-askuserquestion (pi install git:github.com/ghoseb/pi-askuserquestion)");
+		}
+
+		if (missing.length > 0) {
 			ctx.ui.notify(
-				"@nicknisi/pi-ideation: pi-subagents not found. Install with: pi install npm:pi-subagents",
+				`@nicknisi/pi-ideation: missing recommended packages:\n${missing.join("\n")}`,
 				"warning",
 			);
 		}

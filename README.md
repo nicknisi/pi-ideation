@@ -10,15 +10,16 @@ A [pi](https://github.com/badlogic/pi-mono) package ported from [claude-plugins/
 pi install npm:@nicknisi/pi-ideation
 ```
 
-### Required: pi-subagents
+### Recommended packages
 
-This package uses the `scout` and `reviewer` agents for codebase exploration and code review. These require [pi-subagents](https://github.com/nicobailon/pi-subagents):
+These packages enhance the ideation workflow. The skills work without them but with reduced functionality. A warning is shown at session start for any missing packages.
 
-```bash
-pi install npm:pi-subagents
-```
+| Package | Install | What it adds |
+|---------|---------|-------------|
+| [pi-subagents](https://github.com/nicobailon/pi-subagents) | `pi install npm:pi-subagents` | Scout/reviewer agents, parallel execution, chains |
+| [pi-askuserquestion](https://github.com/ghoseb/pi-askuserquestion) | `pi install git:github.com/ghoseb/pi-askuserquestion` | Structured TUI for clarifying questions |
 
-Without pi-subagents, the skills still work but will fall back to inline exploration and skip the automated review cycle. A warning is shown at session start if pi-subagents is not installed.
+Without pi-subagents, execute-spec falls back to inline codebase exploration and skips the automated review cycle. Without pi-askuserquestion, the LLM asks questions as numbered plain-text options instead of an interactive TUI.
 
 ## What's Included
 

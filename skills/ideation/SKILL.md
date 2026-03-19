@@ -7,11 +7,11 @@ description: Transform raw brain dumps (dictated freestyle) into structured impl
 
 Transform unstructured brain dumps into structured, actionable implementation artifacts through a confidence-gated workflow.
 
-## Critical: Ask Clarifying Questions
+## Critical: Structured Questions at Decision Points
 
-**ALWAYS ask clarifying questions at decision points.** Present structured options so the user can respond clearly.
+At every decision point, ask the user with structured options. If the `ask_user_question` tool is available, use it — it provides a TUI with selectable options. Otherwise, present numbered options in plain text.
 
-Ask questions for:
+Structured questions are required for:
 
 - Clarifying questions during confidence scoring (Phase 2)
 - Project name confirmation before writing artifacts
@@ -19,8 +19,6 @@ Ask questions for:
 - Workflow choice (PRDs vs straight to specs)
 - Phase review feedback before spec generation
 - Any decision point requiring user input
-
-Structure questions with numbered options when choices are clear.
 
 ## Workflow Pipeline
 
@@ -126,13 +124,14 @@ Score each dimension (0-20 points):
 
 ### 3.4 Ask Clarifying Questions
 
-When confidence < 95%, ask clarifying questions. Structure questions with clear options when possible.
+When confidence < 95%, ask clarifying questions with structured options.
 
-**Effective question format**:
+**Effective question format** (applies to both `ask_user_question` tool and plain text):
 
-- Provide 2-4 numbered options per question when choices are clear
+- Provide 2-4 options per question when choices are clear
 - Note when multiple answers apply
 - Keep questions focused and specific
+- Include descriptions that explain implications of each choice
 
 **Question strategy**:
 
@@ -156,12 +155,12 @@ When confidence ≥ 95%, generate the contract document.
 5. Ask the user for approval:
 
 ```
-Does this contract accurately capture your intent?
-
-1. **Approved** - Contract is accurate, proceed
-2. **Needs changes** - Some parts need revision
-3. **Missing scope** - Important items are not captured
-4. **Start over** - Fundamentally off track, re-analyze
+Question: "Does this contract accurately capture your intent?"
+Options:
+- "Approved" - Contract is accurate, proceed
+- "Needs changes" - Some parts need revision
+- "Missing scope" - Important items are not captured
+- "Start over" - Fundamentally off track, re-analyze
 ```
 
 **If not approved:** Revise the contract based on feedback. Do not re-score confidence unless the feedback reveals a fundamental misunderstanding — in that case, return to Phase 3.2 and re-score. Otherwise, edit `contract.md` directly and re-present for approval. Iterate until approved.
@@ -178,11 +177,11 @@ Ask the user:
 
 ```
 How should we proceed from the contract?
-
-1. **Straight to specs** — Recommended for technical projects.
-   Contract defines what, specs define how. Faster.
-2. **PRDs then specs** — Recommended for large scope or cross-functional
-   teams. Adds a requirements layer for stakeholder alignment.
+Options:
+- "Straight to specs" — Recommended for technical projects.
+  Contract defines what, specs define how. Faster.
+- "PRDs then specs" — Recommended for large scope or cross-functional
+  teams. Adds a requirements layer for stakeholder alignment.
 ```
 
 ### 4.2 Determine Phases
@@ -223,11 +222,11 @@ Present all PRDs for review:
 
 ```
 Do these PRD phases look correct?
-
-1. **Approved** - Phases and requirements look good, proceed to specs
-2. **Adjust phases** - Need to move features between phases
-3. **Missing requirements** - Some requirements are missing or unclear
-4. **Start over** - Need to revisit the contract
+Options:
+- "Approved" - Phases and requirements look good, proceed to specs
+- "Adjust phases" - Need to move features between phases
+- "Missing requirements" - Some requirements are missing or unclear
+- "Start over" - Need to revisit the contract
 ```
 
 Iterate until user explicitly approves.
